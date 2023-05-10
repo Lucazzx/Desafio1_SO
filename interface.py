@@ -12,6 +12,7 @@ numero_sorteado = None
 # Variáveis de interface
 entries = []    # inputs dos usuários
 texto_vencedor = None
+texto_pontuacoes = None
 
 # Variáveis do semáforo
 vencedor_da_rodada = {"nome": None,
@@ -20,6 +21,8 @@ vencedor_da_rodada = {"nome": None,
 semaforo = threading.Semaphore()
 
 # Declaração de funções
+
+
 def ler_palpites():
     for i in range(n):
         if entries[i] is not None:
@@ -51,11 +54,22 @@ def computar_pontuacao_rodada():
             break
 
 
+def escrever_pontuacao():
+    pontuacao_jogadores = "Pontuação:\n"
+
+    for jogador in jogadores:
+        pontuacao_jogadores += jogador["nome"] + \
+            ":  " + str(jogador["pontuacao"]) + "\n"
+
+    return pontuacao_jogadores
+
+
 def executar_rodada():
 
     global vencedor_da_rodada
     global numero_sorteado
     global texto_vencedor
+    global texto_pontuacoes
 
     threads = []
 
@@ -75,6 +89,8 @@ def executar_rodada():
 
     texto_vencedor.config(
         text=f"O número sorteado foi {numero_sorteado}.\n{vencedor_da_rodada['nome']} ganhou com o palpite {vencedor_da_rodada['palpite']}.\n")
+
+    texto_pontuacoes.config(text=escrever_pontuacao())
 
     print(f"\n\nO número sorteado foi {numero_sorteado}.")
     print(f"O(A) ganhador(a) da rodada foi: {vencedor_da_rodada['nome']}!")
@@ -120,6 +136,7 @@ def jogar(jogador, n):  # TODO: tirar n
 # Interface
 def interface_game():
     global texto_vencedor
+    global texto_pontuacoes
 
     janela = Tk()
     janela.title("Jogo de Advinhação")
@@ -134,15 +151,12 @@ def interface_game():
     for i in range(n):
         # interface de palpites e pontuações dos jogadores
         space = Label(janela, text="")
-        texto_jogador = Label(janela, text="Jogador "+str(i+1))
+        texto_jogador = Label(janela, text=jogadores[i]["nome"])
         entries[i] = Entry(janela)
-        texto_pontuacao = Label(
-            janela, text="Pontuação: " + str(jogadores[i]["pontuacao"]))
 
         space.grid(column=col, row=row)
         texto_jogador.grid(column=col, row=row+1)
         entries[i].grid(column=col, row=row+2)
-        texto_pontuacao.grid(column=col, row=row+3)
 
         col += 1
         if col > 2:
@@ -156,6 +170,9 @@ def interface_game():
 
     texto_vencedor = Label(janela, text="")
     texto_vencedor.grid(column=1, row=row+1)
+
+    texto_pontuacoes = Label(janela, text=escrever_pontuacao())
+    texto_pontuacoes.grid(column=2, row=row+1)
 
     janela.mainloop()
 
