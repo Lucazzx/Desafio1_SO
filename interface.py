@@ -5,29 +5,88 @@ import random
 
 # Declaração de variáveis
 n = 0  # numero de jogadores
-
-entry = []    # input da interface
+entries = []    # input da interface
 jogadores = [] # variaveis dos jogadores (nome, palpite, pontuacao)
-vencedor = None     
+vencedor_da_rodada = {"nome": None,
+                      "palpite": None,
+                      'diff_palpite_num_sorteado': 9999999999}
+semaforo = threading.Semaphore()    
 
 # Declaração de funções
+
 def ler_palpites():
-    # preenche palpite dos jogadores
     for i in range(n):
-        if entry[i] is not None:
-            jogadores[i]["palpite"] = int(entry[i].get())
+        if entries[i] is not None:
+            jogadores[i]["palpite"] = int(entries[i].get())
+
+def reiniciar_palpites():
+    for i in range(n):
+            entries[i].delete(0, END)
+            jogadores[i]["palpite"] = None
 
 def enviar_palpites(): # Ação do botão
-
+    
     print("Palpites enviados")
 
     ler_palpites()
-
-    # Reinicia palpites
-    for i in range(n):
-        entry[i].delete(0, END)
+    executar_rodada()
+    reiniciar_palpites()
 
     print(jogadores)
+
+def executar_rodada(jogadores):
+
+  global vencedor_da_rodada
+
+  threads = []
+  
+  numero_sorteado = random.randint(1, 100)
+
+  for jogador in jogadores:
+    threads.append(threading.Thread(target=jogar, args=(jogador, numero_sorteado)))
+
+  for thread in threads:
+    thread.start()
+
+  for thread in threads:
+    thread.join()
+  
+  print(f"\n\nO número sorteado foi {numero_sorteado}.")
+  print(f"O(A) ganhador(a) da rodada foi: {vencedor_da_rodada['nome']}!")
+  print(f"{vencedor_da_rodada['nome']} palpitou {vencedor_da_rodada['palpite']}.")
+  print(f"A diferença entre o palpite e o número sorteado foi de {vencedor_da_rodada['palpite']}.\n\n\n\n")
+  
+  # TODO: incrementar pontuacao do vencedor da rodada
+  # TODO: printar pontuacao incrementada
+  
+def jogar(jogador, numero_sorteado):
+
+    global vencedor_da_rodada
+    global semaforo
+
+    semaforo.acquire()
+    
+    diff_palpite_num_sorteado = abs(jogador['palpite'] - numero_sorteado)
+
+    print(f"[{jogador['nome']} - {jogador['palpite']}] calculei a diferença = abs({jogador['palpite']} - {numero_sorteado}) = {diff_palpite_num_sorteado}")
+    
+    time.sleep(3)
+    
+    print(f"[{jogador['nome']} - {jogador['palpite']}] neste momento, há {len(semaforo._cond._waiters)} pessoas na fila")
+
+    diff_atual_eh_menor = diff_palpite_num_sorteado < vencedor_da_rodada['diff_palpite_num_sorteado']
+
+    print(f"[{jogador['nome']} - {jogador['palpite']}] comparei com o menor ate agr = {diff_palpite_num_sorteado} < {vencedor_da_rodada['diff_palpite_num_sorteado']}? {diff_atual_eh_menor}")
+    
+    if diff_atual_eh_menor:
+
+        vencedor_da_rodada = {"nome": jogador['nome'],
+                              "palpite": jogador['palpite'],
+                              'diff_palpite_num_sorteado': diff_palpite_num_sorteado}
+
+        print(f"[{jogador['nome']} - {jogador['palpite']}] escrevi meu nome como vencedor")
+
+    semaforo.release()
 
 
 # Interface
@@ -46,12 +105,12 @@ def interface_game():
         # interface de palpites e pontuações dos jogadores
         space = Label(janela, text="")
         texto_jogador = Label(janela, text="Jogador "+str(i))
-        entry[i] =Entry(janela)
+        entries[i] = Entry(janela)
         texto_pontuacao = Label(janela, text="Pontuação: " + str(jogadores[i]["pontuacao"]))
 
         space.grid(column=col, row=row)
         texto_jogador.grid(column=col, row=row+1)
-        entry[i].grid(column=col, row=row+2)
+        entries[i].grid(column=col, row=row+2)
         texto_pontuacao.grid(column=col, row=row+3)
 
         col += 1
@@ -70,20 +129,17 @@ def interface_game():
     janela.mainloop()
 
 def start_game():
-    global entry
+    global entries
     global jogadores
-    global threads
     global n
     
     n = int(entry_num_jogadores.get())
     print("Iniciando jogo.", n, "jogadores.")
     
     janela_intro.destroy()
-    
-    entry = [None]*n                    # input da interface
-    threads = [None]*n                  # variaveis de threads
 
-    # TODO nome dos jogadores
+    entries = [None]*n                    # input da interface
+
     for i in range(n):
         jogadores.append({"nome":"Jogador "+str(i),      # variaveis dos jogadores (nome, palpite, pontuacao)
                             "palpite":None, 
