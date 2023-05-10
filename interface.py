@@ -5,11 +5,15 @@ import random
 
 # Declaração de variáveis
 n = 0  # numero de jogadores
-entries = []    # input da interface
 jogadores = []  # variaveis dos jogadores (nome, palpite, pontuacao)
 palpite_maximo = 100
 numero_sorteado = None
 
+# Variáveis de interface
+entries = []    # inputs dos usuários
+texto_vencedor = None
+
+# Variáveis do semáforo
 vencedor_da_rodada = {"nome": None,
                       "palpite": None,
                       'diff_palpite_num_sorteado': 101}
@@ -41,16 +45,17 @@ def enviar_palpites():  # Ação do botão
 
 def computar_pontuacao_rodada():
 
-  for jogador in jogadores:
-    if jogador["nome"] == vencedor_da_rodada["nome"]:
-        jogador["pontuacao"] += 1 
-        break
+    for jogador in jogadores:
+        if jogador["nome"] == vencedor_da_rodada["nome"]:
+            jogador["pontuacao"] += 1
+            break
 
 
 def executar_rodada():
 
     global vencedor_da_rodada
     global numero_sorteado
+    global texto_vencedor
 
     threads = []
 
@@ -67,15 +72,19 @@ def executar_rodada():
         thread.join()
 
     computar_pontuacao_rodada()
-    Tk.update(janela)
+
+    texto_vencedor.config(
+        text=f"O número sorteado foi {numero_sorteado}.\n{vencedor_da_rodada['nome']} ganhou com o palpite {vencedor_da_rodada['palpite']}.\n")
 
     print(f"\n\nO número sorteado foi {numero_sorteado}.")
     print(f"O(A) ganhador(a) da rodada foi: {vencedor_da_rodada['nome']}!")
-    print(f"{vencedor_da_rodada['nome']} palpitou {vencedor_da_rodada['palpite']}.")
-    print(f"A diferença entre o palpite e o número sorteado foi de {vencedor_da_rodada['palpite']}.\n\n\n\n")
+    print(
+        f"{vencedor_da_rodada['nome']} palpitou {vencedor_da_rodada['palpite']}.")
+    print(
+        f"A diferença entre o palpite e o número sorteado foi de {vencedor_da_rodada['palpite']}.\n\n\n\n")
 
 
-def jogar(jogador, n):
+def jogar(jogador, n):  # TODO: tirar n
 
     global vencedor_da_rodada
     global numero_sorteado
@@ -87,7 +96,7 @@ def jogar(jogador, n):
 
     print(f"[{jogador['nome']} - {jogador['palpite']}] calculei a diferença = abs({jogador['palpite']} - {numero_sorteado}) = {diff_palpite_num_sorteado}")
 
-    time.sleep(1)
+    # time.sleep(1)
 
     print(f"[{jogador['nome']} - {jogador['palpite']}] neste momento, há {len(semaforo._cond._waiters)} pessoas na fila")
 
@@ -110,8 +119,9 @@ def jogar(jogador, n):
 
 # Interface
 def interface_game():
+    global texto_vencedor
 
-    # janela = Tk()
+    janela = Tk()
     janela.title("Jogo de Advinhação")
 
     texto_orientacao = Label(
@@ -124,10 +134,10 @@ def interface_game():
     for i in range(n):
         # interface de palpites e pontuações dos jogadores
         space = Label(janela, text="")
-        texto_jogador = Label(janela, text="Jogador "+str(i))
+        texto_jogador = Label(janela, text="Jogador "+str(i+1))
         entries[i] = Entry(janela)
         texto_pontuacao = Label(
-        janela, text="Pontuação: " + str(jogadores[i]["pontuacao"]))
+            janela, text="Pontuação: " + str(jogadores[i]["pontuacao"]))
 
         space.grid(column=col, row=row)
         texto_jogador.grid(column=col, row=row+1)
@@ -145,7 +155,6 @@ def interface_game():
     submit.grid(column=1, row=row, padx=10, pady=25)
 
     texto_vencedor = Label(janela, text="")
-    texto_vencedor = Label(janela, text=f"O número sorteado foi {numero_sorteado}.\nO(A) ganhador(a) da rodada foi: {vencedor_da_rodada['nome']}!\n{vencedor_da_rodada['nome']} palpitou {vencedor_da_rodada['palpite']}.\nA diferença entre o palpite e o número sorteado foi de {vencedor_da_rodada['diff_palpite_num_sorteado']}")
     texto_vencedor.grid(column=1, row=row+1)
 
     janela.mainloop()
@@ -164,13 +173,12 @@ def start_game():
     entries = [None]*n                    # input da interface
 
     for i in range(n):
-        jogadores.append({"nome": "Jogador "+str(i),      # variaveis dos jogadores (nome, palpite, pontuacao)
+        jogadores.append({"nome": "Jogador "+str(i+1),      # variaveis dos jogadores (nome, palpite, pontuacao)
                           "palpite": None,
                           "pontuacao": 0})
 
     interface_game()
 
-janela = Tk()
 
 janela_intro = Tk()
 janela_intro.title("Jogo Advinhação")
