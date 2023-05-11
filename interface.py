@@ -3,16 +3,23 @@ import threading
 import time
 import random
 
-# Declaração de variáveis
+# -------------------------------- Declaração de variáveis --------------------------------
+
+# Variáveis gerais
 n = 0  # numero de jogadores
+threads = []
 jogadores = []  # variaveis dos jogadores (nome, palpite, pontuacao)
 palpite_maximo = 100
 numero_sorteado = None
 
+
 # Variáveis de interface
+entry_num_jogadores = None
+janela_intro = None
 entries = []    # inputs dos usuários
 texto_vencedor = None
 texto_pontuacoes = None
+
 
 # Variáveis do semáforo
 vencedor_da_rodada = {"nome": None,
@@ -20,17 +27,25 @@ vencedor_da_rodada = {"nome": None,
                       'diff_palpite_num_sorteado': 101}
 semaforo = threading.Semaphore()
 
-# Declaração de funções
 
+# --------------------------------  Declaração de funções -------------------------------- 
 
+# Ler palpites
 def ler_palpites():
+
     for i in range(n):
         if entries[i] is not None:
             jogadores[i]["palpite"] = int(entries[i].get())
 
 
+# Reiniciar rodada
 def reiniciar_rodada():
+
     global vencedor_da_rodada
+    global threads
+    
+    threads = []
+
     vencedor_da_rodada = {"nome": None,
                       "palpite": None,
                       'diff_palpite_num_sorteado': 101}
@@ -38,29 +53,31 @@ def reiniciar_rodada():
     for i in range(n):
         entries[i].delete(0, END)
         jogadores[i]["palpite"] = None
+
+
+# Enviar palpites
+def enviar_palpites(): 
     
-
-
-def enviar_palpites():  # Ação do botão
-
-    print("Palpites enviados")
+    print("Palpites enviados.\n")
 
     ler_palpites()
     executar_rodada()
     reiniciar_rodada()
 
-    print(jogadores)
-
-
+# Computar pontuação
 def computar_pontuacao_rodada():
 
+    global vencedor_da_rodada
+    
     for jogador in jogadores:
         if jogador["nome"] == vencedor_da_rodada["nome"]:
             jogador["pontuacao"] += 1
             break
 
 
-def escrever_pontuacao():
+# Escrever pontuação
+def gerar_str_pontuacao():
+
     pontuacao_jogadores = "Pontuação:\n"
 
     for jogador in jogadores:
@@ -70,90 +87,187 @@ def escrever_pontuacao():
     return pontuacao_jogadores
 
 
-def executar_rodada():
-
+# Gerar string do vencedor da rodada
+def gerar_str_vencedor_rodada():
+   
     global vencedor_da_rodada
     global numero_sorteado
-    global texto_vencedor
-    global texto_pontuacoes
+    
+    str = f"O número sorteado foi {numero_sorteado}.\n"
 
-    threads = []
+    # Declara empate
+    if(vencedor_da_rodada["nome"] == None): 
+        str += f"Houve um empate, ninguém pontua nessa rodada.\n"
+    
+    # Declara vencedor
+    else:
+        str += f"{vencedor_da_rodada['nome']} ganhou com o palpite {vencedor_da_rodada['palpite']}.\n"
 
-    numero_sorteado = random.randint(1, 100)
+    return str
 
+
+# Instanciar threads
+def instanciar_threads():
+    
+    global threads
+    
     for jogador in jogadores:
         threads.append(threading.Thread(
             target=jogar, args=(jogador, 0)))
 
+
+# Iniciar threads
+def iniciar_threads():
+    
     for thread in threads:
         thread.start()
 
+
+# Finalizar threads
+def finalizar_threads():
+    
     for thread in threads:
         thread.join()
 
-    computar_pontuacao_rodada()
 
-    if(vencedor_da_rodada["nome"] == None): # empate
-        texto_vencedor.config(
-            text=f"O número sorteado foi {numero_sorteado}.\nHouve um empate, ninguém pontua nessa rodada.\n")
+# Atualizar interface com o resultado da rodada
+def atualizar_interface():
     
-    else:
-        texto_vencedor.config(
-            text=f"O número sorteado foi {numero_sorteado}.\n{vencedor_da_rodada['nome']} ganhou com o palpite {vencedor_da_rodada['palpite']}.\n")
-
-    texto_pontuacoes.config(text=escrever_pontuacao())
-
-    print(f"\n\nO número sorteado foi {numero_sorteado}.")
-    print(f"O(A) ganhador(a) da rodada foi: {vencedor_da_rodada['nome']}!")
-    print(
-        f"{vencedor_da_rodada['nome']} palpitou {vencedor_da_rodada['palpite']}.")
-    print(
-        f"A diferença entre o palpite e o número sorteado foi de {vencedor_da_rodada['palpite']}.\n\n\n\n")
+    global texto_vencedor
+    global texto_pontuacoes
+    
+    texto_vencedor.config(text=gerar_str_vencedor_rodada())
+    texto_pontuacoes.config(text=gerar_str_pontuacao())
 
 
-def jogar(jogador, n):  # TODO: tirar n
+# Printr logs do resultado da rodada
+def printar_resultado_rodada():
+
+    print(f"\n\nO(A) ganhador(a) da rodada foi: {vencedor_da_rodada['nome']}!")
+    print(f"{vencedor_da_rodada['nome']} palpitou {vencedor_da_rodada['palpite']}.")
+    print(f"A diferença entre o palpite e o número sorteado foi de {vencedor_da_rodada['diff_palpite_num_sorteado']}.\n\n")
+    print(f"Jogadores:\n{jogadores}\n")
+
+
+# Executar rodada. 
+def executar_rodada():
+
+    global numero_sorteado
+
+    numero_sorteado = random.randint(1, palpite_maximo)
+
+    print(f"O número sorteado foi {numero_sorteado}.\n")
+
+    instanciar_threads()
+    iniciar_threads()
+    finalizar_threads()
+    computar_pontuacao_rodada()
+    atualizar_interface()
+    printar_resultado_rodada()
+
+
+def print_calculo_diff(jogador, diff_palpite_num_sorteado):
+    print(f"\n[{jogador['nome']}] Calculei a diferença entre meu palpite ({jogador['palpite']}) e o número sorteado ({numero_sorteado}) = {diff_palpite_num_sorteado}.")
+
+
+def print_tam_fila(jogador):
+    print(f"[{jogador['nome']}] Há {len(semaforo._cond._waiters)} pessoas na fila.")
+
+
+def gerar_str_comparacao(diff_palpite_num_sorteado):
+    return f"Comparando minha diferença ({diff_palpite_num_sorteado}) com a menor diferença até agora ({vencedor_da_rodada['diff_palpite_num_sorteado']})..."
+
+
+def print_ganhou(jogador, diff_palpite_num_sorteado):
+    print(f"[{jogador['nome']}] {gerar_str_comparacao(diff_palpite_num_sorteado)} Minha diferença é menor.")
+    print(f"[{jogador['nome']}] Escrevi meu nome como vencedor.")
+
+
+def print_empate(jogador, diff_palpite_num_sorteado):
+    print(f"[{jogador['nome']}] {gerar_str_comparacao(diff_palpite_num_sorteado)} Minha diferença é igual.")
+    print(f"[{jogador['nome']}] Removi o nome do vencedor.")
+
+    
+def print_perdeu(jogador, diff_palpite_num_sorteado):
+    print(f"[{jogador['nome']}] {gerar_str_comparacao(diff_palpite_num_sorteado)} Minha diferença é maior.")
+    print(f"[{jogador['nome']}] Não alterei o nome do vencedor.")
+
+
+def compara_diff_e_escreve_vencedor(jogador, diff_palpite_num_sorteado):
 
     global vencedor_da_rodada
-    global numero_sorteado
-    global semaforo
-
-    semaforo.acquire()
-
-    diff_palpite_num_sorteado = abs(jogador['palpite'] - numero_sorteado)
-
-    print(f"[{jogador['nome']} - {jogador['palpite']}] calculei a diferença = abs({jogador['palpite']} - {numero_sorteado}) = {diff_palpite_num_sorteado}")
-
-    time.sleep(1)
-
-    print(f"[{jogador['nome']} - {jogador['palpite']}] neste momento, há {len(semaforo._cond._waiters)} pessoas na fila")
-
-    diff_atual_eh_menor = diff_palpite_num_sorteado < vencedor_da_rodada[
-        'diff_palpite_num_sorteado']
-
-    print(f"[{jogador['nome']} - {jogador['palpite']}] comparei com o menor ate agr = {diff_palpite_num_sorteado} < {vencedor_da_rodada['diff_palpite_num_sorteado']}? {diff_atual_eh_menor}")
-
-    if diff_atual_eh_menor:
-
+    
+    if (diff_palpite_num_sorteado < vencedor_da_rodada['diff_palpite_num_sorteado']):
+        print_ganhou(jogador, diff_palpite_num_sorteado)
         vencedor_da_rodada = {"nome": jogador['nome'],
                               "palpite": jogador['palpite'],
                               'diff_palpite_num_sorteado': diff_palpite_num_sorteado}
 
-        print(
-            f"[{jogador['nome']} - {jogador['palpite']}] escrevi meu nome como vencedor")
-
     elif(diff_palpite_num_sorteado == vencedor_da_rodada['diff_palpite_num_sorteado']):
+        print_empate(jogador, diff_palpite_num_sorteado)
         vencedor_da_rodada = {"nome": None,
                               "palpite": None,
                               'diff_palpite_num_sorteado': diff_palpite_num_sorteado}
-        print("Empate!!")
+    
+    else:
+        print_perdeu(jogador, diff_palpite_num_sorteado)
+
+
+
+def foo(jogador):
+
+    global numero_sorteado
+
+    diff_palpite_num_sorteado = abs(jogador['palpite'] - numero_sorteado)
+    
+    print_calculo_diff(jogador, diff_palpite_num_sorteado)
+
+    # time.sleep(1)
+
+    compara_diff_e_escreve_vencedor(jogador, diff_palpite_num_sorteado)
+
+    print_tam_fila(jogador)
+
+
+def jogar(jogador, n):  # TODO: tirar n
+
+    global semaforo
+
+    semaforo.acquire()
+
+    foo(jogador)
 
     semaforo.release()
 
 
-# Interface
-def interface_game():
+# Inicia o jogo
+def start_game():
+    
+    global entries
+    global jogadores
+    global n
+
+    n = int(entry_num_jogadores.get())
+    print(f"Iniciando jogo com {n} jogadores.\n")
+
+    janela_intro.destroy()
+
+    entries = [None]*n                    # input da interface
+
+    for i in range(n):
+        jogadores.append({"nome": "Jogador "+str(i+1),      # variaveis dos jogadores (nome, palpite, pontuacao)
+                          "palpite": None,
+                          "pontuacao": 0})
+
+    inicializar_interface_game()
+
+# -------------------------------- Interface --------------------------------
+
+# Interface do jogo em execução
+def inicializar_interface_game():
     global texto_vencedor
     global texto_pontuacoes
+    
 
     janela = Tk()
     janela.title("Jogo de Advinhação")
@@ -188,43 +302,32 @@ def interface_game():
     texto_vencedor = Label(janela, text="")
     texto_vencedor.grid(column=1, row=row+1)
 
-    texto_pontuacoes = Label(janela, text=escrever_pontuacao())
+    texto_pontuacoes = Label(janela, text=gerar_str_pontuacao())
     texto_pontuacoes.grid(column=2, row=row+1)
 
     janela.mainloop()
 
 
-def start_game():
-    global entries
-    global jogadores
-    global n
+# Interface de introdução. Informa quantidade de jogadores
+def inicializar_intro_game():
 
-    n = int(entry_num_jogadores.get())
-    print("Iniciando jogo.", n, "jogadores.")
+    global janela_intro
+    global entry_num_jogadores
 
-    janela_intro.destroy()
+    janela_intro = Tk()
+    janela_intro.title("Jogo Advinhação")
 
-    entries = [None]*n                    # input da interface
+    texto_orientacao = Label(
+        janela_intro, text="Olá, seja bem-vindo(a)!\n Para começar, informe a quantidade de jogadores.")
+    texto_orientacao.grid(column=1, row=0)
 
-    for i in range(n):
-        jogadores.append({"nome": "Jogador "+str(i+1),      # variaveis dos jogadores (nome, palpite, pontuacao)
-                          "palpite": None,
-                          "pontuacao": 0})
+    entry_num_jogadores = Entry(janela_intro)
+    entry_num_jogadores.grid(column=1, row=1)
 
-    interface_game()
+    start = Button(janela_intro, text="Começar a jogar", command=start_game)
+    start.grid(column=1, row=2, padx=10, pady=25)
+
+    janela_intro.mainloop()
 
 
-janela_intro = Tk()
-janela_intro.title("Jogo Advinhação")
-
-texto_orientacao = Label(
-    janela_intro, text="Olá, seja bem-vindo(a)!\n Para começar, informe a quantidade de jogadores.")
-texto_orientacao.grid(column=1, row=0)
-
-entry_num_jogadores = Entry(janela_intro)
-entry_num_jogadores.grid(column=1, row=1)
-
-start = Button(janela_intro, text="Começar a jogar", command=start_game)
-start.grid(column=1, row=2, padx=10, pady=25)
-
-janela_intro.mainloop()
+inicializar_intro_game()
