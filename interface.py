@@ -29,10 +29,16 @@ def ler_palpites():
             jogadores[i]["palpite"] = int(entries[i].get())
 
 
-def reiniciar_palpites():
+def reiniciar_rodada():
+    global vencedor_da_rodada
+    vencedor_da_rodada = {"nome": None,
+                      "palpite": None,
+                      'diff_palpite_num_sorteado': 101}
+    
     for i in range(n):
         entries[i].delete(0, END)
         jogadores[i]["palpite"] = None
+    
 
 
 def enviar_palpites():  # Ação do botão
@@ -41,7 +47,7 @@ def enviar_palpites():  # Ação do botão
 
     ler_palpites()
     executar_rodada()
-    reiniciar_palpites()
+    reiniciar_rodada()
 
     print(jogadores)
 
@@ -87,8 +93,13 @@ def executar_rodada():
 
     computar_pontuacao_rodada()
 
-    texto_vencedor.config(
-        text=f"O número sorteado foi {numero_sorteado}.\n{vencedor_da_rodada['nome']} ganhou com o palpite {vencedor_da_rodada['palpite']}.\n")
+    if(vencedor_da_rodada["nome"] == None): # empate
+        texto_vencedor.config(
+            text=f"O número sorteado foi {numero_sorteado}.\nHouve um empate, ninguém pontua nessa rodada.\n")
+    
+    else:
+        texto_vencedor.config(
+            text=f"O número sorteado foi {numero_sorteado}.\n{vencedor_da_rodada['nome']} ganhou com o palpite {vencedor_da_rodada['palpite']}.\n")
 
     texto_pontuacoes.config(text=escrever_pontuacao())
 
@@ -112,7 +123,7 @@ def jogar(jogador, n):  # TODO: tirar n
 
     print(f"[{jogador['nome']} - {jogador['palpite']}] calculei a diferença = abs({jogador['palpite']} - {numero_sorteado}) = {diff_palpite_num_sorteado}")
 
-    # time.sleep(1)
+    time.sleep(1)
 
     print(f"[{jogador['nome']} - {jogador['palpite']}] neste momento, há {len(semaforo._cond._waiters)} pessoas na fila")
 
@@ -129,6 +140,12 @@ def jogar(jogador, n):  # TODO: tirar n
 
         print(
             f"[{jogador['nome']} - {jogador['palpite']}] escrevi meu nome como vencedor")
+
+    elif(diff_palpite_num_sorteado == vencedor_da_rodada['diff_palpite_num_sorteado']):
+        vencedor_da_rodada = {"nome": None,
+                              "palpite": None,
+                              'diff_palpite_num_sorteado': diff_palpite_num_sorteado}
+        print("Empate!!")
 
     semaforo.release()
 
