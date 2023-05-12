@@ -25,7 +25,7 @@ threads = []                                      # array com as threads para ca
 semaforo = threading.Semaphore()                  # semáforo
 vencedor_da_rodada = {"nome": None,               # variável global protegida pelo semáforo
                       "palpite": None,
-                      'diff_palpite_num_sorteado': palpite_maximo+1}
+                      'diff_palpite_num_sorteado': palpite_maximo + 1}
 
 
 # ============================  Declaração de funções ============================
