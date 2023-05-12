@@ -24,7 +24,7 @@ A cada rodada, o jogador que obtiver a menor diferença entre o valor sorteado e
 
 Ganha o jogador que tiver mais pontos ao final do jogo.
 
-## Manual de Uso
+## Manual de uso
 
 1. Execute o jogo. Será exibida a tela de seleção do número de jogadores.
 
@@ -77,7 +77,7 @@ Você pode rodar o jogo diretamente através do código-fonte em Python ou atrav
 
     Ou clique em "Run" na IDE de sua preferência.
 
-### Através do arquivo executável
+#### Através do arquivo executável
 
 Se você quiser gerar o executável, siga todos os passos abaixo. 
 
