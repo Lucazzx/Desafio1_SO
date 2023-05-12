@@ -53,7 +53,7 @@ def gerar_str_vencedor_rodada():
 
     # Declara empate
     if (vencedor_da_rodada["nome"] == None):
-        str += f"Houve um empate, ninguém pontua nessa rodada.\n"
+        str += "Houve um empate, ninguém pontua nessa rodada.\n"
 
     # Declara vencedor
     else:
@@ -69,7 +69,7 @@ def gerar_str_comparacao(diff_palpite_num_sorteado):
 
 # Printa cálculo da diferença entre o palpite do jogador e o número sorteado.
 def printar_calculo_diff(jogador, diff_palpite_num_sorteado):
-    print(f"\n[{jogador['nome']}] Calculei a diferença entre meu palpite ({jogador['palpite']}) e o número sorteado ({numero_sorteado}) = {diff_palpite_num_sorteado}.")
+    print(f"\n[{jogador['nome']}] Calculando a diferença entre meu palpite ({jogador['palpite']}) e o número sorteado ({numero_sorteado}) = {diff_palpite_num_sorteado}.")
 
 
 # Printa tamanho da fila do semáforo.
@@ -81,7 +81,7 @@ def printar_tam_fila(jogador):
 # Printa que o jogador ganhou.
 def printar_ganhou(jogador, diff_palpite_num_sorteado):
     print(f"[{jogador['nome']}] {gerar_str_comparacao(diff_palpite_num_sorteado)} Minha diferença é menor.")
-    print(f"[{jogador['nome']}] Escrevi meu nome como vencedor.")
+    print(f"[{jogador['nome']}] Escrevendo meu nome como vencedor.")
 
 
 # Printa que houve empate.
@@ -98,12 +98,21 @@ def printar_perdeu(jogador, diff_palpite_num_sorteado):
 
 # Printa o resultado da rodada.
 def printar_resultado_rodada():
-    print(f"\n\nO(A) ganhador(a) da rodada foi: {vencedor_da_rodada['nome']}!")
-    print(
-        f"{vencedor_da_rodada['nome']} palpitou {vencedor_da_rodada['palpite']}.")
-    print(
-        f"A diferença entre o palpite e o número sorteado foi de {vencedor_da_rodada['diff_palpite_num_sorteado']}.\n\n")
+    
+    # Declara empate
+    if (vencedor_da_rodada["nome"] == None):
+        print("\n\nHouve um empate, ninguém pontua nessa rodada.\n\n")
+
+    # Declara vencedor
+    else:
+        print(
+            f"\n\n{vencedor_da_rodada['nome']} ganhou com o palpite {vencedor_da_rodada['palpite']}.")
+        print(
+            f"A diferença entre o palpite e o número sorteado foi de {vencedor_da_rodada['diff_palpite_num_sorteado']}.\n\n")
+    
     print(f"Jogadores:\n{jogadores}\n")
+    
+    print("\n================= FIM DA RODADA =================\n\n")
 
 
 # Printa o número sorteado.
@@ -281,7 +290,7 @@ def proxima_rodada():
 
     vencedor_da_rodada = {"nome": None,
                           "palpite": None,
-                          'diff_palpite_num_sorteado': 101}
+                          'diff_palpite_num_sorteado': palpite_maximo + 1}
 
     limpar_palpites_interface()
 
