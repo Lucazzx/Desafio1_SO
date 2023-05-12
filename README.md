@@ -85,7 +85,7 @@ https://youtu.be/GjyP6RepfmA
 
     Se você quiser gerar o executável, siga todos os passos abaixo. 
 
-    Caso deseje apenas executar os arquivos executáveis já disponibilizados, pule para o passo 3.
+    Caso deseje apenas executar os arquivos executáveis já disponibilizados, pule para o passo **iii**.
 
     1. Instale o `PyInstaller`:
 
