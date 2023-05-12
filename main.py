@@ -6,26 +6,26 @@ import random
 # ============================ Declaração de variáveis ============================
 
 # Variáveis gerais
-n = 0  # numero de jogadores
-threads = []
-jogadores = []  # variaveis dos jogadores (nome, palpite, pontuacao)
-palpite_maximo = 100
-numero_sorteado = None
+n = 0                                                                           # número de jogadores
+jogadores = []                                                                  # array de jogadores (nome, palpite, pontuacao)
+palpite_maximo = 100                                                            # valor máximo a ser sorteado
+numero_sorteado = None                                                          # valor sorteado a cada rodada
 
 
 # Variáveis de interface
-entry_num_jogadores = None
-janela_intro = None
-entries = []    # inputs dos usuários
-texto_vencedor = None
-texto_pontuacoes = None
+janela_intro = None                                                             # janela de introdução do jogo
+entry_num_jogadores = None                                                      # input do número de jogadores
+entries_palpites = []                                                           # inputs dos palpites usuários
+texto_vencedor = None                                                           # texto exibido na interface com o vencedor da rodada
+texto_pontuacoes = None                                                         # texto exibido na interface com as pontuções
 
 
-# Variáveis do semáforo
-vencedor_da_rodada = {"nome": None,
+# Variáveis threads e semáforo
+threads = []                                                                    # array com as threads para cada jogador
+semaforo = threading.Semaphore()                                                # semáforo
+vencedor_da_rodada = {"nome": None,                                             # variável global protegida pelo semáforo
                       "palpite": None,
                       'diff_palpite_num_sorteado': palpite_maximo+1}
-semaforo = threading.Semaphore()
 
 
 # ============================  Declaração de funções ============================
@@ -137,7 +137,7 @@ def atualizar_interface():
 def limpar_palpites_interface():
 
     for i in range(n):
-        entries[i].delete(0, END)
+        entries_palpites[i].delete(0, END)
         jogadores[i]["palpite"] = None
 
 
@@ -145,8 +145,8 @@ def limpar_palpites_interface():
 def ler_palpites_interface():
 
     for i in range(n):
-        if entries[i] is not None:
-            jogadores[i]["palpite"] = int(entries[i].get())
+        if entries_palpites[i] is not None:
+            jogadores[i]["palpite"] = int(entries_palpites[i].get())
 
 
 # Interface do jogo em execução. Possui palpites e pontuações dos jogadores.
@@ -169,11 +169,11 @@ def interface_jogo():
 
         space = Label(janela, text="")
         texto_jogador = Label(janela, text=jogadores[i]["nome"])
-        entries[i] = Entry(janela)
+        entries_palpites[i] = Entry(janela)
 
         space.grid(column=col, row=row)
         texto_jogador.grid(column=col, row=row+1)
-        entries[i].grid(column=col, row=row+2)
+        entries_palpites[i].grid(column=col, row=row+2)
 
         col += 1
         if col > 2:
@@ -197,7 +197,7 @@ def interface_jogo():
 # Ação do botão. Inicializa variáveis e interface do jogo.
 def inicializar_jogo():
 
-    global entries
+    global entries_palpites
     global jogadores
     global n
 
@@ -207,7 +207,7 @@ def inicializar_jogo():
 
     janela_intro.destroy()
 
-    entries = [None]*n
+    entries_palpites = [None]*n
 
     for i in range(n):
         jogadores.append({"nome": "Jogador "+str(i+1),
@@ -272,9 +272,12 @@ def finalizar_threads():
 def proxima_rodada():
 
     global vencedor_da_rodada
+    global numero_sorteado
     global threads
 
     threads = []
+
+    numero_sorteado = None
 
     vencedor_da_rodada = {"nome": None,
                           "palpite": None,
