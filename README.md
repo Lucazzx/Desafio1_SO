@@ -24,6 +24,9 @@ A cada rodada, o jogador que obtiver a menor diferença entre o valor sorteado e
 
 Ganha o jogador que tiver mais pontos ao final do jogo.
 
+## Vídeo
+https://youtu.be/GjyP6RepfmA
+
 ## Manual de uso
 
 1. Execute o jogo. Será exibida a tela de seleção do número de jogadores.
