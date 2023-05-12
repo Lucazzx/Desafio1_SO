@@ -380,9 +380,9 @@ def inicializar_jogada(jogador):
 
     global semaforo
 
-    # semaforo.acquire()
+    semaforo.acquire()
     executar_jogada(jogador)
-    # semaforo.release()
+    semaforo.release()
 
 
 # ============================ Run ============================
