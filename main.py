@@ -6,24 +6,24 @@ import random
 # ============================ Declaração de variáveis ============================
 
 # Variáveis gerais
-n = 0                                                                           # número de jogadores
-jogadores = []                                                                  # array de jogadores (nome, palpite, pontuacao)
-palpite_maximo = 100                                                            # valor máximo a ser sorteado
-numero_sorteado = None                                                          # valor sorteado a cada rodada
+n = 0                                             # número de jogadores
+jogadores = []                                    # array de jogadores (nome, palpite, pontuacao)
+palpite_maximo = 100                              # valor máximo a ser sorteado
+numero_sorteado = None                            # valor sorteado a cada rodada
 
 
 # Variáveis de interface
-janela_intro = None                                                             # janela de introdução do jogo
-entry_num_jogadores = None                                                      # input do número de jogadores
-entries_palpites = []                                                           # inputs dos palpites usuários
-texto_vencedor = None                                                           # texto exibido na interface com o vencedor da rodada
-texto_pontuacoes = None                                                         # texto exibido na interface com as pontuções
+janela_intro = None                               # janela de introdução do jogo
+entry_num_jogadores = None                        # input do número de jogadores
+entries_palpites = []                             # inputs dos palpites usuários
+texto_vencedor = None                             # texto exibido na interface com o vencedor da rodada
+texto_pontuacoes = None                           # texto exibido na interface com as pontuções
 
 
 # Variáveis threads e semáforo
-threads = []                                                                    # array com as threads para cada jogador
-semaforo = threading.Semaphore()                                                # semáforo
-vencedor_da_rodada = {"nome": None,                                             # variável global protegida pelo semáforo
+threads = []                                      # array com as threads para cada jogador
+semaforo = threading.Semaphore()                  # semáforo
+vencedor_da_rodada = {"nome": None,               # variável global protegida pelo semáforo
                       "palpite": None,
                       'diff_palpite_num_sorteado': palpite_maximo+1}
 
