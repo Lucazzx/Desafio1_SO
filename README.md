@@ -39,7 +39,7 @@ Ganha o jogador que tiver mais pontos ao final do jogo.
 6. Divirta-se!
 
 
-## Instruções de instalação/compilação/execução do jogo
+## Instruções de instalação/compilação/execução
 
 ### Requerimentos
 
