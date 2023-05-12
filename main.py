@@ -290,7 +290,7 @@ def proxima_rodada():
 
     vencedor_da_rodada = {"nome": None,
                           "palpite": None,
-                          'diff_palpite_num_sorteado': 101}
+                          'diff_palpite_num_sorteado': palpite_maximo + 1}
 
     limpar_palpites_interface()
 

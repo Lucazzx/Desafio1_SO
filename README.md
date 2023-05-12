@@ -48,9 +48,6 @@ Ganha o jogador que tiver mais pontos ao final do jogo.
 
 ### Instruções
 
-Você pode rodar o jogo diretamente através do código-fonte em Python ou através de um arquivo executável.
-
-#### Através do código-fonte
 
 1. Clonar o repositório:
 
@@ -69,7 +66,11 @@ Você pode rodar o jogo diretamente através do código-fonte em Python ou atrav
     pip install tkinter
     ```
 
-1. Executar o código:
+1. Executar o jogo:
+
+    Você pode rodar o jogo diretamente através do código-fonte em Python ou através de um arquivo executável.
+
+    #### Através do código-fonte
 
     ```
     python main.py
@@ -77,28 +78,28 @@ Você pode rodar o jogo diretamente através do código-fonte em Python ou atrav
 
     Ou clique em "Run" na IDE de sua preferência.
 
-#### Através do arquivo executável
+    #### Através do arquivo executável
 
-Se você quiser gerar o executável, siga todos os passos abaixo. 
+    Se você quiser gerar o executável, siga todos os passos abaixo. 
 
-Caso deseje apenas executar os arquivos executáveis já disponibilizados, pule para o passo 3.
+    Caso deseje apenas executar os arquivos executáveis já disponibilizados, pule para o passo 3.
 
-1. Instale o `PyInstaller`:
+    1. Instale o `PyInstaller`:
 
-    ```
-    pip install pyinstaller
-    ```
+        ```
+        pip install pyinstaller
+        ```
 
-1. Gere o arquivo executável:
+    1. Gere o arquivo executável:
 
-    ```
-    pyinstaller --onefile main.py
-    ```
+        ```
+        pyinstaller --onefile main.py
+        ```
 
-    O arquivo executável será criado na pasta `dist`.
+        O arquivo executável será criado na pasta `dist`.
 
-1. Execute o arquivo gerado:
+    1. Execute o arquivo gerado:
 
-    ```
-    dist/main
-    ```
+        ```
+        dist/main
+        ```
