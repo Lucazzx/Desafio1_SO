@@ -52,7 +52,7 @@ Você pode rodar o jogo diretamente através do código-fonte em Python ou atrav
 
 #### Através do código-fonte
 
-1. Clonar o repositório :
+1. Clonar o repositório:
 
     ```
     git clone https://github.com/Lucazzx/Desafio1_SO.git
